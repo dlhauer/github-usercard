@@ -4,22 +4,46 @@
            https://api.github.com/users/<your name>
 */
 
+// const user = 'zimashima';
 
 const cards = document.querySelector('.cards');
-axios.get('https://api.github.com/users/dlhauer')
-  .then( response => {
-    addCard(response);
+const form = document.createElement('form');
+const input = document.createElement('input');
+const submit = document.createElement('input');
 
-    axios.get(response.data.followers_url)
-      .then ( response => {
-        // console.log(response);
-        response.data.forEach( item => {
-          axios.get(`https://api.github.com/users/${item.login}`)
-            .then ( response => addCard(response) )
-        });
+input.type = 'text';
+input.id = 'user';
+input.placeholder = 'Enter a Github username to see that person\'s followers';
+submit.type = 'button'
+submit.value = 'Go';
+
+input.classList.add('text-input');
+submit.classList.add('submit');
+
+cards.appendChild(form);
+form.appendChild(input);
+form.appendChild(submit);
+
+submit.addEventListener( 'click', getUser );
+
+function getUser() {
+  const user = document.getElementById('user').value;
+  console.log(user);
+
+  axios.get(`https://api.github.com/users/${user}`)
+    .then( response => {
+      addCard(response);
+
+      axios.get(response.data.followers_url)
+        .then ( response => {
+          // console.log(response);
+          response.data.forEach( item => {
+            axios.get(`https://api.github.com/users/${item.login}`)
+              .then ( response => addCard(response) )
+          });
+    });
   });
-});
-
+}
 function addCard(response) {
   const card = createCard(response.data);
   cards.appendChild(card);
@@ -116,6 +140,9 @@ function createCard(userData) {
   followers.textContent = `Followers: ${userData.followers}`;
   following.textContent = `Following: ${userData.following}`;
   bio.textContent = `Bio: ${userData.bio}`;
+  if (userData.bio === null) {
+    bio.textContent = 'This Github user is a lamewad who can\'t be bothered to fill out a bio.';
+  };
 
   // console.log(userData.html_url);
   // console.log(profile);
