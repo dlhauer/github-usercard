@@ -1,7 +1,51 @@
+
 /* Step 1: using axios, send a GET request to the following URL 
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+const cards = document.querySelector('.cards');
+const form = document.createElement('form');
+const input = document.createElement('input');
+const submit = document.createElement('input');
+
+input.type = 'text';
+input.id = 'user';
+input.placeholder = 'Enter a Github username to see that person\'s followers';
+submit.type = 'button'
+submit.value = 'Go';
+
+input.classList.add('text-input');
+submit.classList.add('submit');
+
+cards.appendChild(form);
+form.appendChild(input);
+form.appendChild(submit);
+
+submit.addEventListener( 'click', getUser );
+
+function getUser() {
+  const user = document.getElementById('user').value;
+  console.log(user);
+
+  axios.get(`https://api.github.com/users/${user}`)
+    .then( response => {
+      addCard(response);
+
+      axios.get(response.data.followers_url)
+        .then ( response => {
+          // console.log(response);
+          response.data.forEach( item => {
+            axios.get(`https://api.github.com/users/${item.login}`)
+              .then ( response => addCard(response) )
+          });
+    });
+  });
+}
+function addCard(response) {
+  const card = createCard(response.data);
+  cards.appendChild(card);
+  return;
+}
 
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
@@ -23,9 +67,6 @@
           Using that array, iterate over it, requesting data for each user, creating a new card for each
           user, and adding that card to the DOM.
 */
-
-const followersArray = [];
-
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
 
@@ -46,10 +87,51 @@ const followersArray = [];
 
 */
 
-/* List of LS Instructors Github username's: 
-  tetondan
-  dustinmyers
-  justsml
-  luishrd
-  bigknell
-*/
+function createCard(userData) {
+  const card = document.createElement('div');
+  const img = document.createElement('img');
+  const cardInfo = document.createElement('div');
+  const name = document.createElement('h3');
+  const username = document.createElement('p');
+  const location = document.createElement('p');
+  const profile = document.createElement('p');
+  // const profileLink = document.createElement('a');
+  const followers = document.createElement('p');
+  const following = document.createElement('p');
+  const bio = document.createElement('p');
+
+  card.classList.add('card');
+  cardInfo.classList.add('card-info');
+  name.classList.add('name');
+  username.classList.add('username');
+
+
+  card.appendChild(img);
+  card.appendChild(cardInfo);
+  cardInfo.appendChild(name);
+  cardInfo.appendChild(username);
+  cardInfo.appendChild(location);
+  cardInfo.appendChild(profile);
+  cardInfo.appendChild(followers);
+  cardInfo.appendChild(following);
+  cardInfo.appendChild(bio);
+  // profile.appendChild(profileLink);
+
+  img.src = userData.avatar_url;
+  name.textContent = userData.name;
+  username.textContent = userData.login;
+  location.textContent = `Location: ${userData.location}`;
+  profile.innerHTML = `Profile: <a target='_blank' href='${userData.html_url}'>${userData.html_url}</a>`;
+  // profileLink.textContent = userData.html_url;
+  // profileLink.href = userData.html_url;
+  followers.textContent = `Followers: ${userData.followers}`;
+  following.textContent = `Following: ${userData.following}`;
+  bio.textContent = `Bio: ${userData.bio}`;
+  if (userData.bio === null) {
+    bio.textContent = 'This Github user has no bio.';
+  }
+
+  // console.log(userData.html_url);
+  // console.log(profile);
+  return card;
+}
