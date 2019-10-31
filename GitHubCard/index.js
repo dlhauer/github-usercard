@@ -3,15 +3,28 @@
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+
+
 const cards = document.querySelector('.cards');
-console.log(cards);
 axios.get('https://api.github.com/users/dlhauer')
   .then( response => {
-    const dansCard = createCard(response.data);
-    cards.appendChild(dansCard);
-  });
+    addCard(response);
 
-  // console.log('Here\'s Dan\'s Github!', dansGithub);
+    axios.get(response.data.followers_url)
+      .then ( response => {
+        // console.log(response);
+        response.data.forEach( item => {
+          axios.get(`https://api.github.com/users/${item.login}`)
+            .then ( response => addCard(response) )
+        });
+  });
+});
+
+function addCard(response) {
+  const card = createCard(response.data);
+  cards.appendChild(card);
+  return;
+}
 
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
