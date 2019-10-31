@@ -3,9 +3,6 @@
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
-
-// const user = 'zimashima';
-
 const cards = document.querySelector('.cards');
 const form = document.createElement('form');
 const input = document.createElement('input');
@@ -61,13 +58,6 @@ function addCard(response) {
            create a new component and add it to the DOM as a child of .cards
 */
 
-
-
-
-
-
-
-
 /* Step 5: Now that you have your own card getting added to the DOM, either 
           follow this link in your browser https://api.github.com/users/<Your github name>/followers 
           , manually find some other users' github handles, or use the list found 
@@ -77,9 +67,6 @@ function addCard(response) {
           Using that array, iterate over it, requesting data for each user, creating a new card for each
           user, and adding that card to the DOM.
 */
-
-const followersArray = [];
-
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
 
@@ -141,20 +128,10 @@ function createCard(userData) {
   following.textContent = `Following: ${userData.following}`;
   bio.textContent = `Bio: ${userData.bio}`;
   if (userData.bio === null) {
-    bio.textContent = 'This Github user is a lamewad who can\'t be bothered to fill out a bio.';
-  };
+    bio.textContent = 'This Github user has no bio.';
+  }
 
   // console.log(userData.html_url);
   // console.log(profile);
   return card;
-
-
 }
-
-/* List of LS Instructors Github username's: 
-  tetondan
-  dustinmyers
-  justsml
-  luishrd
-  bigknell
-*/
